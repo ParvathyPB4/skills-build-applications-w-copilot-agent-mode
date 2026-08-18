@@ -1,7 +1,11 @@
 import { useApiResource } from '../hooks/useApiResource'
 
+const leaderboardEndpoint = import.meta.env.VITE_CODESPACE_NAME?.trim()
+  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev/api/leaderboard`
+  : 'http://localhost:8000/api/leaderboard'
+
 function Leaderboard() {
-  const { data, loading, error } = useApiResource('leaderboard')
+  const { data, loading, error } = useApiResource('leaderboard', leaderboardEndpoint)
   return <ResourceView eyebrow="THE RACE" title="Leaderboard" description="A little competition, a lot of consistency."><div className="leaderboard-list"><States loading={loading} error={error} empty={data.length === 0} emptyLabel="The leaderboard is waiting for its first score." />{!loading && !error && data.map((entry, index) => <article className="leader-row" key={entry._id ?? entry.rank}><span className="rank-number">{String(entry.rank ?? index + 1).padStart(2, '0')}</span><div className="avatar">{entry.user?.displayName?.slice(0, 1) ?? '?'}</div><div className="leader-name"><strong>{entry.user?.displayName ?? 'Athlete'}</strong><span>{entry.team?.name ?? 'Independent'}</span></div><strong className="points">{entry.points ?? 0}<small> pts</small></strong></article>)}</div></ResourceView>
 }
 export default Leaderboard

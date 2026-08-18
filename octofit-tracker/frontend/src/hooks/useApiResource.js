@@ -10,7 +10,7 @@ const endpointUrls = {
   workouts: codespaceName ? `https://${codespaceName}-8000.app.github.dev/api/workouts` : 'http://localhost:8000/api/workouts',
 }
 
-export function useApiResource(resource) {
+export function useApiResource(resource, endpointOverride) {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -19,7 +19,7 @@ export function useApiResource(resource) {
     const controller = new AbortController()
     const fetchData = async () => {
       try {
-        const endpoint = endpointUrls[resource] ?? (codespaceName
+        const endpoint = endpointOverride ?? endpointUrls[resource] ?? (codespaceName
           ? `https://${codespaceName}-8000.app.github.dev/api/${resource}`
           : `http://localhost:8000/api/${resource}`)
         const response = await fetch(endpoint, { signal: controller.signal })
@@ -35,7 +35,7 @@ export function useApiResource(resource) {
 
     fetchData()
     return () => controller.abort()
-  }, [resource])
+  }, [endpointOverride, resource])
 
   return { data, loading, error }
 }

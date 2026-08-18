@@ -1,7 +1,11 @@
 import { useApiResource } from '../hooks/useApiResource'
 
+const usersEndpoint = import.meta.env.VITE_CODESPACE_NAME?.trim()
+  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev/api/users`
+  : 'http://localhost:8000/api/users'
+
 function Users() {
-  const { data, loading, error } = useApiResource('users')
+  const { data, loading, error } = useApiResource('users', usersEndpoint)
   return <ResourceView title="Users" description="Meet the athletes behind the numbers."><div className="card-grid user-grid"><States loading={loading} error={error} empty={data.length === 0} emptyLabel="No users found." />{!loading && !error && data.map((user) => <article className="user-card" key={user._id ?? user.username}><div className="avatar avatar-large">{user.displayName?.slice(0, 1) ?? '?'}</div><h2>{user.displayName ?? user.username}</h2><span className="user-handle">@{user.username}</span><p>{user.goal ?? 'Keep showing up.'}</p></article>)}</div></ResourceView>
 }
 export default Users

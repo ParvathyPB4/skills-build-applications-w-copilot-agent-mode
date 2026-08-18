@@ -1,7 +1,11 @@
 import { useApiResource } from '../hooks/useApiResource'
 
+const teamsEndpoint = import.meta.env.VITE_CODESPACE_NAME?.trim()
+  ? `https://${import.meta.env.VITE_CODESPACE_NAME}-8000.app.github.dev/api/teams`
+  : 'http://localhost:8000/api/teams'
+
 function Teams() {
-  const { data, loading, error } = useApiResource('teams')
+  const { data, loading, error } = useApiResource('teams', teamsEndpoint)
   return <ResourceView title="Teams" description="Good energy travels faster together."><div className="card-grid"><States loading={loading} error={error} empty={data.length === 0} emptyLabel="Create a team to start moving together." />{!loading && !error && data.map((team) => <article className="team-card" key={team._id ?? team.name}><div className="team-card-top"><span className="team-badge">TEAM</span><span>{team.members?.length ?? 0} members</span></div><h2>{team.name}</h2><p>{team.description}</p><div className="member-stack">{(team.members ?? []).slice(0, 4).map((member) => <span className="avatar avatar-small" key={member._id}>{member.displayName?.slice(0, 1) ?? '?'}</span>)}</div></article>)}</div></ResourceView>
 }
 export default Teams
